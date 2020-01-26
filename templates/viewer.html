@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+</head>
+<body>
+
+
+
+<h1>
+    X-T
+</h1>
+<canvas id="chart1"></canvas>
+
+
+<h1>
+    V-T
+</h1>
+<canvas id="chart2"></canvas>
+
+<h1>
+    phase-space plot
+</h1>
+<canvas id="canvas1" width="1200" height="700" style="width: 100%; border:1px solid #d3d3d3;">Your browser does not
+    support the
+    HTML5 canvas tag.
+</canvas>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    function scale(points, width, height) {
+        let maxW = -9999999;
+        let minW = 9999999;
+        let maxH = -9999999;
+        let minH = 9999999;
+        for (let i = 0; i < points.length; i++) {
+            if (points[i][0] < minW) {
+                minW = points[i][0];
+            }
+            if (points[i][0] > maxW) {
+                maxW = points[i][0];
+            }
+            if (points[i][1] > maxH) {
+                maxH = points[i][1];
+            }
+            if (points[i][1] < minH) {
+                minH = points[i][1];
+            }
+        }
+
+        let Cx = width / (maxW - minW);
+        let Cy = height / (maxH - minH);
+
+        let Cmin = Math.min(Cx, Cy);
+
+        let newPoints = []
+        for (let i = 0; i < points.length; i++) {
+            x = points[i][0];
+            y = points[i][1];
+            x = (x - minW) * Cmin;
+            y = (y - minH) * Cmin;
+            newPoints.push([x, y]);
+        }
+        let w = (maxW - minW) * Cmin;
+        let h = (maxH - minH) * Cmin;
+        return ({points: newPoints, h: h, w: w, minH: minH, minW: minW, maxH: maxH, maxW: maxW});
+    }
+
+    function draw_on_canvas(ctx, poitns) {
+
+
+        function gradient(a, b) {
+            return (b.y - a.y) / (b.x - a.x);
+        }
+
+        function bzCurve(points, f, t) {
+            //f = 0, will be straight line
+            //t suppose to be 1, but changing the value can control the smoothness too
+            if (typeof (f) == 'undefined') f = 0.3;
+            if (typeof (t) == 'undefined') t = 0.6;
+
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+
+            var m = 0;
+            var dx1 = 0;
+            var dy1 = 0;
+
+            var preP = points[0];
+            for (var i = 1; i < points.length; i++) {
+                var curP = points[i];
+                nexP = points[i + 1];
+                if (nexP) {
+                    m = gradient(preP, nexP);
+                    dx2 = (nexP.x - curP.x) * -f;
+                    dy2 = dx2 * m * t;
+                } else {
+                    dx2 = 0;
+                    dy2 = 0;
+                }
+                ctx.bezierCurveTo(preP.x - dx1, preP.y - dy1, curP.x + dx2, curP.y + dy2, curP.x, curP.y);
+                dx1 = dx2;
+                dy1 = dy2;
+                preP = curP;
+            }
+            ctx.stroke();
+        }
+
+        // Generate random data
+        var lines = [];
+
+        for (let i = 0; i < poitns.length; i++) {
+            p = {x: poitns[i][0], y: poitns[i][1]};
+            lines.push(p)
+        }
+
+
+        //draw straight line
+        ctx.beginPath();
+
+        //draw smooth line
+        ctx.setLineDash([0]);
+        ctx.lineWidth = 0.2;
+        ctx.strokeStyle = "blue";
+        bzCurve(lines, 0.3, 1);
+
+    }
+
+    function draw_chartJs(ctx, points, name) {
+        var data1 = [];
+        let length1 = points.length;
+        for (let i = 0; i < length1; i++) {
+            let point = points[i];
+            data1.push({'x': point[0], 'y': point[1]});
+        }
+
+        var labels = [];
+
+        for (let i = 0; i < length1; i++) {
+            labels.push(points[i][0]);
+        }
+
+        new Chart(ctx, {
+            type: 'line',
+            fillOpacity: .3,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: name,
+                    // backgroundColor: 'rgb(255, 99, 3)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    borderWidth: 2,
+                    data: data1
+                }]
+            },
+            options: {}
+        });
+
+    }
+</script>
+<script>
+
+    var cv = document.getElementById("canvas1");
+    var canvas1_ctx = cv.getContext("2d");
+    let points1 =
+        {{ points_set_1 }};
+    let scaled = scale(points1, cv.width, cv.height);
+    cv.width = scaled.w;
+    cv.height = scaled.h;
+    draw_on_canvas(canvas1_ctx, scaled.points);
+
+
+    let points2 = {{ points_set_2 }}
+        chart1_ctx = document.getElementById('chart1').getContext('2d');
+    draw_chartJs(chart1_ctx, points2, 'X-T');
+
+    let points3 = {{ points_set_3 }};
+        chart1_ctx = document.getElementById('chart2').getContext('2d');
+    draw_chartJs(chart1_ctx, points3, 'V-T');
+
+</script>

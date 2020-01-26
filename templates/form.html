@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+    <style>
+        .margin {
+            margin: 5%;
+            margin-top: 2%;
+            margin-left: 30%;
+            margin-right: 30%;
+        }
+
+        #register_form {
+            background-color: whitesmoke;
+            padding: 3%;
+            border-radius: 3%;
+            border: solid #888888 3px;
+            background-color: white;
+        }
+
+        #h {
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            margin-top: 3%;
+            font-weight: bold;
+            font-size: 30px;
+            color: #666666;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>From</title>
+</head>
+<body>
+
+<div>
+    <strong id="h">mohammad naeem sahebazzamani 97100813!</strong>
+    <form id="register_form" class="ui form margin" action="{% url 'viewer' %}" method="post">{% csrf_token %}
+        <div class="field">
+            <label>Angular Frequency(W0)</label>
+            <div class="ui left input">
+                <input type="text" name="w0" placeholder="Angular Frequency(W0)" required>
+            </div>
+        </div>
+        <div class="field">
+            <label>Attenuation coefficient(b)</label>
+            <div class="ui left input">
+                <input type="text" name="b" placeholder="Attenuation coefficient(b)" required>
+            </div>
+        </div>
+        <div class="field">
+            <label>Primary domain(a)</label>
+            <div class="ui left input">
+                <input type="text" name="a" placeholder="Primary domain(a)" required>
+            </div>
+        </div>
+        <div class="field">
+            <label>Time step(dt)</label>
+            <div class="ui left input">
+                <input type="text" name="dt" placeholder="Time step(dt)" value="0.1" required>
+            </div>
+        </div>
+        <div class="field">
+            <label>Time</label>
+            <div class="ui left input">
+                <input type="text" name="t1" placeholder="Start time" value="0" required>
+                <strong style="font-size: 18px; margin: 3px; color: #888888">to</strong>
+                <input type="text" name="t2" placeholder="End time" value="100" required>
+            </div>
+        </div>
+
+        <button class="ui button" type="submit" name="submit">Submit</button>
+    </form>
+
+</div>
+
+</body>
+</html>

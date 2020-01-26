@@ -1,0 +1,29 @@
+var data1 = [];
+    let length1 = points1.length;
+    for (let i = 0; i < length1; i++) {
+        let point = points1[i];
+        data1.push({'x': point[0], 'y': point[1]});
+    }
+
+    var labels = [];
+
+    for (let i = 0; i < length1; i++) {
+        labels.push(points1[i][0]);
+    }
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'line',
+        fillOpacity: .3,
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'runge kutta',
+                // backgroundColor: 'rgb(255, 99, 3)',
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 2,
+                data: data1
+            }]
+        },
+        options: {}
+    });
